@@ -23,16 +23,21 @@ task create_mariadb_tables => sub {
 };
 
 task disable_resolved => sub {
+    service "systemd-resolved" => "stop";
     service "systemd-resolved" => "disable";
+    rm "/etc/resolv.conf";
     run "echo \"nameserver 8.8.8.8\" | tee /etc/resolv.conf";
 };
 
 task setup_mysql_connection => sub {
     file "/etc/powerdns/pdns.d/pdns.local.gmysql.conf",
-        source => "files/pdns.local.gmysql.conf",
+        source => "/files/pdns.local.gmysql.conf",
         owner   => "pdns",
         mode    => 640;
-    run "service pdns restart";
+    append_or_amend_line '/etc/powerdns/pdns.d/pdns.local.gmysql.conf',
+        line => "gmysql-password=5ecur3Pa55w0rd",
+        regexp => '^gmysql-password=YOUR_PASSWORD_HERE',
+        on_change => sub { service "pdns" => "restart"; };
 };
 
 1;

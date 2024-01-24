@@ -1,6 +1,6 @@
 server {
   listen	*:80;
-  server_name               server-address-1542;
+  server_name               <% =serveraddress %>;
 
   index                     index.html index.htm index.php;
   root                      /var/www/html/pdns;

@@ -1,0 +1,6 @@
+users:
+  - default
+  - name: vmuser
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDPpS2Yzc1qvxnhzYdJAyCjdFuAfMju7mPrvIuEsUPDAYYrWbFH6Ej1sQUxc9Jct9B9+grw348vlUhXBvoU51beViy2sq3kLfOAT4OZdlUeVvj1boFn3k7r8YkO0xGZBK9usKaXW6ehUQIlfQjypcM4c1kKtyEJGZmMxFfUH0SwF+Cj5WKpnTaxTmTU+sOamGOOSt8z93enpla4SF90Augy5W/eFsKO8atYlYAL05D8ao0LS63CUNpjV1SfTwoa1NIZkFnQeex2rgodOicXqk944eATrPhFyKk0lmE3KybrpjqT5HyDGkfiE/f3sQKYV8fyRxKOYhIekH/FEAL7if/Z/uncjzEA7Ev+sx6Y4XxuR3MBGGXeobCMJbueMz/smgsGHzRWbZOhbdusMxqCv4VBWPxDiBJ2zL4FLW6Rbe8b0L/OPmK/eeSLwXR9tVei8UoaCFE3tVO6wOzFNXcVfEjpyoKRglijvO/IBvgJJww8Jb8Z1yuqhuUWbB1+tUOr668= vmuser

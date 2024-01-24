@@ -5,18 +5,26 @@ use Rex -base;
 
 include qw/
     Common::PowerDNS
-    Common::Apt
     Common::WebUI
 /;
 
-task "main" => sub {
-    Common::Apt::upgrade_system();
-    Common::Apt::autoremove();
+user "vmuser";
+private_key "multipass-ssh-key";
+public_key "multipass-ssh-key.pub";
+key_auth;
+
+group nameservers => "nameserver1";
+
+task "pdns", group => "nameservers", sub {
+    update_package_db;
     Common::PowerDNS::install_packages();
     Common::PowerDNS::create_mariadb_user();
     Common::PowerDNS::create_mariadb_tables();
     Common::PowerDNS::disable_resolved();
     Common::PowerDNS::setup_mysql_connection();
+};
+
+task "webui", group => "nameservers", sub {
     Common::WebUI::install_dependencies();
     Common::WebUI::install_node();
     Common::WebUI::install_pdns_admin();
