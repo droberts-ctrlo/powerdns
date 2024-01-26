@@ -51,4 +51,20 @@ task setup_mysql_connection => sub {
         mode    => 640;
 };
 
+task create_zone => sub {
+    my ($domain,$ip) = @_;
+
+    die "Please specify a domain name" unless $domain;
+    die "Please specify an IP address" unless $ip;
+    
+    my $result = run "pdnsutil create-zone $domain ns1.$domain";
+    Rex::Logger::info($result);
+
+    $result = run "pdnsutil add-record $domain ns1.$domain NS ns1.$domain";
+    Rex::Logger::info($result);
+
+    $result = run "pdnsutil add-record $domain ns1.$domain A $ip";
+    Rex::Logger::info($result);
+};
+
 1;
