@@ -7,12 +7,8 @@ include qw/
     Common::PowerDNS
 /;
 
-user "vmuser";
-private_key "multipass-ssh-key";
-public_key "multipass-ssh-key.pub";
+user "root";
 key_auth;
-
-group nameservers => "nameserver1", "nameserver2";
 
 task "pdns", sub {
     Common::PowerDNS::install_packages();

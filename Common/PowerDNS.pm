@@ -4,20 +4,31 @@ use Rex -base;
 
 task install_packages => sub {
     update_package_db;
-    pkg [qw/pdns-server pdns-backend-mysql mariadb-server mariadb-client/], ensure => "present";
+    pkg "pdns-server", ensure => "present";
+    pkg "pdns-backend-mysql", ensure=>"present";
+    pkg "mariadb-server", ensure => "present";
+    pkg "mariadb-client", ensure => "present";
 };
 
 task create_mariadb_user => sub {
+    say "Please enter a password for the MariaDB user 'pda'";
+    my $password = <STDIN>;
+    chomp $password;
     run "mysql -e 'CREATE DATABASE IF NOT EXISTS pda;'";
-    run "mysql -e 'GRANT ALL PRIVILEGES ON pda.* TO pda\@localhost IDENTIFIED BY \"5ecur3Pa55w0rd\";'";
+    run "mysql -e 'GRANT ALL PRIVILEGES ON pda.* TO pda\@localhost IDENTIFIED BY \"$password\";'";
     run "mysql -e 'FLUSH PRIVILEGES;'";
 };
 
 task create_mariadb_tables => sub {
+    say "Please enter the password for the MariaDB user 'pda'";
+    my $password = <STDIN>;
+    chomp $password;
+
     open SQL, "<./scripts/powerdns.sql" or die $!;
 
     while(<SQL>) {
-        run "mysql pda -e '$_'";
+        my $result = run "mysql pda --password=$password -e '$_'";
+        Rex::Logger::info($result);
     }
 
     close SQL;
@@ -31,14 +42,13 @@ task disable_resolved => sub {
 };
 
 task setup_mysql_connection => sub {
+    say "Please enter the password for the MariaDB user 'pda'";
+    my $password = <STDIN>;
+    chomp $password;
     file "/etc/powerdns/pdns.d/pdns.local.gmysql.conf",
-        source => "files/pdns.local.gmysql.conf",
+        content => template("files/pdns.local.gmysql.conf.tpl", password => $password),
         owner   => "pdns",
         mode    => 640;
-    append_or_amend_line '/etc/powerdns/pdns.d/pdns.local.gmysql.conf',
-        line => "gmysql-password=5ecur3Pa55w0rd",
-        regexp => '^gmysql-password=YOUR_PASSWORD_HERE',
-        on_change => sub { service "pdns" => "restart"; };
 };
 
 1;
